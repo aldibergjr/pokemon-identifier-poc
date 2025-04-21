@@ -7,9 +7,11 @@ import cv2
 import numpy as np
 
 
-DETECTOR_PATH = 'C:/Users/bergc/pxg-bot/alpha-assembly/assets/recognizer/model_recognizer.h5'
+DETECTOR_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'assets\\recognizer\\model_recognizer.h5'
+)
 
-    # Carrega o detector com os pesos treinados
+# Carrega o detector com os pesos treinados
 detector = keras_ocr.detection.Detector()
 detector.model.load_weights(DETECTOR_PATH)
 

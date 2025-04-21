@@ -9,7 +9,7 @@ capture_region = (0, 0, 1920, 1080)
 
 def main():
     # change this with a fori for the images captcha1.png, captcha2.png, captcha3.png
-    for i in range(1, 5):
+    for i in range(1, 8):
 
         # Capture screen
         # screenshot = pyautogui.screenshot(region=capture_region)
