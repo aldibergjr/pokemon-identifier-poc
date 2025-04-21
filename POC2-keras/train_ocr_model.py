@@ -11,6 +11,8 @@ import sklearn.model_selection
 
 import keras_ocr
 
+from src.utils.custom_csv_logger import CustomCSVLogger
+
 data_dir = '.'
 alphabet = string.digits + string.ascii_letters + '!?. '
 recognizer_alphabet = ''.join(sorted(set(alphabet.lower())))
@@ -80,24 +82,45 @@ for layer in recognizer.backbone.layers:
 
 
 detector_batch_size = 1
-detector_basepath = os.path.join(data_dir, f'detector_{datetime.datetime.now().isoformat()}')
+detector_basepath = os.path.join("assets/checkpoints", f"detector_{str(datetime.datetime.now()).replace(':', '-')}")
+os.makedirs(os.path.dirname(detector_basepath), exist_ok=True)
+
+callbacks = [
+    tf.keras.callbacks.EarlyStopping(restore_best_weights=True, patience=5),
+    CustomCSVLogger(f'{detector_basepath}.csv'),
+    tf.keras.callbacks.ModelCheckpoint(
+        filepath=f'{detector_basepath}.h5',
+        save_best_only=True,
+        save_weights_only=False,
+    )
+]
+
 detection_train_generator, detection_val_generator, detection_test_generator = [
     detector.get_batch_generator(
         image_generator=image_generator,
         batch_size=detector_batch_size
     ) for image_generator in image_generators
+
 ]
-detector.model.fit(
-    detection_train_generator,
-    steps_per_epoch=math.ceil(len(background_splits[0]) / detector_batch_size),
-    epochs=1000,
-    workers=0,
-    callbacks=[
-        tf.keras.callbacks.EarlyStopping(restore_best_weights=True, patience=5),
-        tf.keras.callbacks.CSVLogger(f'{detector_basepath}.csv'),
-        tf.keras.callbacks.ModelCheckpoint(filepath=f'{detector_basepath}.h5')
-    ],
-    validation_data=detection_val_generator,
-    validation_steps=math.ceil(len(background_splits[1]) / detector_batch_size),
-    batch_size=detector_batch_size
-)
+
+try:
+    # Treinamento do modelo OCR
+    history = detector.model.fit(
+        detection_train_generator,
+        steps_per_epoch=math.ceil(len(background_splits[0]) / detector_batch_size),
+        epochs=1,
+        workers=0,
+        callbacks=callbacks,
+        validation_data=detection_val_generator,
+        validation_steps=math.ceil(len(background_splits[1]) / detector_batch_size),
+        batch_size=detector_batch_size
+    )
+
+    # Backup extra após treinamento
+    final_model_path = f'{detector_basepath}_final_manual_save.h5'
+    detector.model.save(final_model_path)
+    print(f"\n✅ Modelo salvo com sucesso em: {final_model_path}")
+
+except Exception as e:
+    print(f"\n❌ Erro durante o treinamento: {e}")
+
