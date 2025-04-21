@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\bergc\pxg-bot\POC2-keras\venv_py39_new"
+VIRTUAL_ENV="C:\Users\arthu\codes\pokemon-identifier-poc\POC2-keras\venv_py39_new"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
