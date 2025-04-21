@@ -1,0 +1,1 @@
+# output method, returns the coordinates of the pokemon 

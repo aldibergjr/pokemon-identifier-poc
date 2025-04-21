@@ -28,6 +28,9 @@ ENV/
 .venv
 env.bak/
 venv.bak/
+venv_py39/
+venv_py39_new/
+*.h5
 
 # IDE specific files
 .idea/
