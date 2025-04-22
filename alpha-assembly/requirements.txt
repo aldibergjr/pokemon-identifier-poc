@@ -1,4 +1,6 @@
 tensorflow==2.10.1
 keras-ocr==0.9.3
 numpy==1.23.5
+Pillow==10.2.0
 
+# 11.2.1 pillow

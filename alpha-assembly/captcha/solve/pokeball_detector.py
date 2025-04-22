@@ -14,7 +14,7 @@ class PokeballDetector:
         template_h, template_w = template_gray.shape
         
         matches = []
-        scales = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1]
+        scales = [0.35, 0.4, 0.45, 0.5, 0.6]
         
         for scale in scales:
             width = int(template_w * scale)
@@ -23,7 +23,7 @@ class PokeballDetector:
             
             result = cv2.matchTemplate(screen_gray, resized, cv2.TM_CCOEFF_NORMED)
             
-            threshold = 0.5
+            threshold = 0.7
             loc = np.where(result >= threshold)
             
             for pt in zip(*loc[::-1]):
@@ -34,6 +34,7 @@ class PokeballDetector:
                 matches.append((x, y, r, score))
         
         matches.sort(key=lambda x: x[3], reverse=True)
+
         filtered_matches = []
         
         for m in matches:
@@ -42,4 +43,12 @@ class PokeballDetector:
                       for (x2, y2, r2, _) in filtered_matches):
                 filtered_matches.append(m)
         
+        # draw a circle on the screen based on the matches
+        # if(len(filtered_matches) >= 3):
+        #     for x1, y1, r1, _ in filtered_matches:
+        #         cv2.circle(screen, (x1, y1), r1, (0, 0, 255), 2)
+        #     cv2.imshow("screen", screen)
+        #     cv2.waitKey(0)
+        #     cv2.destroyAllWindows()
+
         return filtered_matches
